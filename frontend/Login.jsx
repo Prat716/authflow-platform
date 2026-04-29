@@ -8,27 +8,35 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
-    const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
-    const res = await fetch(`${API_BASE}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/register";
+      const res = await fetch(`${API_BASE}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!res.ok) {
       const data = await res.json();
-      setError(data.detail ?? "Something went wrong");
-      return;
-    }
 
-    const { access_token } = await res.json();
-    localStorage.setItem("token", access_token);
-    setToken(access_token);
+      if (!res.ok) {
+        setError(data.detail ?? "Something went wrong");
+        return;
+      }
+
+      localStorage.setItem("token", data.access_token);
+      setToken(data.access_token);
+    } catch {
+      setError("Network error — is the server running?");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (token) {
@@ -64,8 +72,8 @@ export default function Login() {
 
         {error && <p style={styles.error}>{error}</p>}
 
-        <button style={styles.button} type="submit">
-          {mode === "login" ? "Log in" : "Register"}
+        <button style={{...styles.button, opacity: loading ? 0.7 : 1}} type="submit" disabled={loading}>
+          {loading ? "Please wait..." : mode === "login" ? "Log in" : "Register"}
         </button>
       </form>
 
