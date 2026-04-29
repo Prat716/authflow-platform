@@ -41,7 +41,12 @@ def generate_token(user_id: str, role: str = "user") -> str:
 
 
 def decode_token(token: str) -> dict:
-    """Decode and verify *token*.  Raises :class:`jwt.PyJWTError` on failure."""
+    """Decode and verify *token*.
+
+    Raises :class:`jwt.ExpiredSignatureError` if the token has expired, or
+    :class:`jwt.InvalidTokenError` (the base class for all PyJWT errors) for
+    any other validation failure.
+    """
     return jwt.decode(token, _SECRET_KEY, algorithms=[_ALGORITHM])
 
 

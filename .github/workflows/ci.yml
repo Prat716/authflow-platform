@@ -12,6 +12,8 @@ jobs:
   backend:
     name: Backend – lint & test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: backend
@@ -40,6 +42,8 @@ jobs:
   frontend:
     name: Frontend – lint & test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: frontend
